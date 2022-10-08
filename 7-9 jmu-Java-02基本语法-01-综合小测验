@@ -1,0 +1,68 @@
+import java.util.Scanner;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+public class Main {
+    public static int fib(int num) {
+        if(num == 1 || num == 2) {
+            return 1;
+        }else {
+            return fib(num - 2) + fib(num - 1);
+        }
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int []sorted=null;
+        while (sc.hasNextLine()){
+            String choice = sc.nextLine();
+            if ("fib".equals(choice) ) {
+                int n = Integer.valueOf(sc.nextLine());
+                int a=1,b=1,c=0;
+                for(int i = 1;i <= n;i++) {
+                    if (i == n){
+                        System.out.println(fib(i));
+                        break;
+                    }
+                    System.out.print(fib(i) + " ");
+                }       //System.out.println();
+            }
+            else if ("sort".equals(choice))
+            {
+                String []arr=sc.nextLine().split(" ");
+                int []a=new int[arr.length];
+                for (int i=0;i<arr.length;i++)
+                {
+                    a[i]=Integer.parseInt(arr[i]);
+                }
+                Arrays.sort(a);
+                sorted=a;
+                System.out.println(Arrays.toString(a));
+            }
+            else if ("search".equals(choice))
+            {
+                int num = Integer.valueOf(sc.nextLine());
+                int ret = Arrays.binarySearch(sorted, num);
+                if (ret < 0) {//当数组中不存在查找值时，Arrays.binarySearch(int[] a, int key)的返回值不一定为-1
+                    System.out.println(-1);
+                } else {
+                    System.out.println(ret);
+                }
+            } else if ("getBirthDate".equals(choice))
+            {
+                int n = Integer.valueOf(sc.nextLine());
+                //String []str=new String[n];
+                for (int i=0;i<n;i++)
+                {
+                    String s=sc.next();
+                    String birth=s.substring(6,10 )+'-'+s.substring(10, 12)+'-'+s.substring(12, 14);
+                    System.out.println(birth);
+                }
+            }
+            else{
+                System.out.println("exit");
+                System.exit(0);
+            }
+           // System.out.println();
+        }
+    }
+}
