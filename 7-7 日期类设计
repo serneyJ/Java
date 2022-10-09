@@ -1,0 +1,347 @@
+import java.util.Scanner;
+import java.util.*;
+class DateUtil{
+    private int year;
+    private int month;
+    private int day;
+    public  DateUtil(int yy,int mm,int dd)
+    {
+        year=yy;
+        month=mm;
+        day=dd;
+    }
+    public void setYear(int yy)
+    {
+        year=yy;
+    }
+    public void setMonth(int mm)
+    {
+        month=mm;
+    }
+    public void setDay(int dd)
+    {
+        day=dd;
+    }
+    public int getYear()
+    {
+        return this.year;
+    }
+    public int getMonth()
+    {
+        return this.month;
+    }
+    public int getDay()
+    {
+        return this.day;
+    }
+        public boolean checkInputValidity()//检测输入的年、月、日是否合法
+    {
+        if (this.year>=1820&&this.year<=2020&&this.month>=1&&this.month<=12&&this.day>=1&&this.day<=31)
+    {
+        if (isLeapYear(year))
+        {
+            if (month==2&&day>29)
+                return false;
+            if (month==4||month==6||month==9||month==11)
+            {
+                if (day==31)
+                    return false;
+            }
+        }
+        else {
+            if (month==2&&day>28)
+                return false;
+            if (month==4||month==6||month==9||month==11)
+            {
+                if (day==31)
+                    return false;
+            }
+        }
+        return true;
+    }
+        else return false;
+    }
+    public boolean isLeapYear(int year)//判断year是否为闰年
+    {
+        if(year%4==0&&year%100!=0||year%400==0)  //判断条件
+            return true;
+        else return false;
+    }
+    public DateUtil getNextNDays(int n)//取得year-month-day的下n天日期
+    {
+        while(n > 365){
+            if(this.isLeapYear(year) && month <= 2){
+                if(month == 2 && day == 29){
+                    day = 1;
+                    month = 3;
+                }
+                year++;
+                n = n - 366;
+            }
+            else if(this.isLeapYear(year+1) && month > 2){
+                year++;
+                n = n - 366;
+            }
+            else{
+                year++;
+                n = n - 365;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            day++;
+            if(this.isLeapYear(year) && month == 2){
+                if(day > 29){
+                    month++;
+                    day = 1;
+                }
+            }
+            else if(overMonth(day)){
+                month++;
+                day = 1;
+                if(month > 12){
+                    month = 1;
+                    year++;
+                }
+            }
+        }
+        return this;
+    }
+    public DateUtil getPreviousNDays(int n)//取得year-month-day的前n天日期
+    {
+        DateUtil d = this;
+        while(n > 365){
+            if(d.isLeapYear(d.getYear()) && d.getMonth() > 2){
+                n = n - 366;
+                d.setYear(d.getYear() - 1);
+            }
+            else if(d.isLeapYear(d.getYear() - 1) && d.getMonth() <= 2){
+                n = n - 366;
+                d.setYear(d.getYear() - 1);
+            }
+            else{
+                n = n - 365;
+                d.setYear(d.getYear() - 1);
+            }
+        }
+        for(int i = 0; i < n; i++){
+            d.setDay(d.getDay() - 1);
+            if(d.getDay() <= 0){
+                d.setMonth(d.getMonth() - 1);
+                if(d.getMonth() <= 0){
+                    d.setMonth(12);
+                    d.setYear(d.getYear() - 1);
+                }
+                if(isLeapYear(d.getYear()) && d.getMonth() == 2)
+                    d.setDay(29);
+                else
+                {
+                    if (d.getMonth()==2)
+                        d.setDay(28);
+                    else if (d.getMonth()==4||d.getMonth()==6||d.getMonth()==9||d.getMonth()==11) {
+                        d.setDay(30);
+                    }
+                    else d.setDay(31);
+                }
+            }
+        }
+        return d;
+    }
+    public boolean compareDates(DateUtil date)//比较当前日期与date的大小（先后）
+    {
+        if (this.year>date.year)
+        {
+            return true;
+        } else if (this.year==date.year)
+        {
+            if (this.month>date.month)
+            {
+                return true;
+            } else if (this.month==date.month) {
+                if (this.day>date.day)
+                    return true;
+            }
+        }
+        return false;
+    }
+    public boolean equalTwoDates(DateUtil date)//判断两个日期是否相等
+    {
+        if (this.year==date.year&&this.month==date.month&&this.day==date.day)
+            return true;
+        else return false;
+    }
+
+        public int getDaysofDates(DateUtil date)
+        {//求当前日期与date之间相差的天
+
+                int[] m=new int[15];//计算每月的天
+                m[1]=31;m[3]=31;m[4]=30;m[5]=31;m[6]=30;m[7]=31;m[8]=31;
+                m[9]=30;m[10]=31;m[11]=30;m[12]=31;
+                int sy,sm,sd,ey,em,ed;
+                int sum=0;
+                if (!this.compareDates(date))
+                {
+                    sy=this.year;
+                    sm=this.month;
+                    sd=this.day;
+                    ey=date.year;
+                    em=date.month;
+                    ed=date.day;
+                }
+                else {
+                    ey=this.year;
+                    em=this.month;
+                    ed=this.day;
+                    sy=date.year;
+                    sm=date.month;
+                    sd=date.day;
+                }
+                if(sy==ey)//开始年与结束年相同
+                {
+                    if((sy%4==0&&sy%100!=0)||sy%400==0)//判断是否为闰年，是二月份为29天
+                        m[2]=29;
+                    for(int i=sm;i<em;i++)//计算两月间的天数
+                    {
+                        if(sm==i)//减去开始年已经过去的天数
+                            sum=m[i]-sd;
+                        else
+                            sum+=m[i];
+                    }
+                    sum+=ed;//加上结束年的天数
+                    if(sm==em)//若开始年的月和结束年的月相同，天数相减
+                        sum-=sd;
+                    return sum;
+                }
+                else//若开始年和结束年不相同
+                {
+                    for(int i=sy;i<ey;i++)//将开始年与结束年的所有天数加起来
+                    {
+                        if((i%4==0&&i%100!=0)||i%400==0)
+                            sum+=366;
+                        else
+                            sum+=365;
+                    }
+                    if((sy%4==0&&sy%100!=0)||sy%400==0)// 判断是否为闰年，是二月份为29天
+                        m[2]=29;
+                    for(int i=1;i<sm;i++)//减去开始年已经过去多加的天数，月数
+                        sum-=m[i];
+                    sum-=sd;
+                    if((ey%4==0&&ey%100!=0)||ey%400==0)//判断是否为闰年，是二月份为29天
+                        m[2]=29;
+                    else
+                        m[2]=28;
+                    for(int i=1;i<em;i++)//加上结束年没有加上的天数、月数
+                        sum+=m[i];
+                    sum+=ed;
+                    return sum;
+                }
+    }
+    public boolean overMonth(int dd)
+    {
+        int da;
+        if(isLeapYear(this.getYear()) && this.getMonth() == 2)
+            da=29;
+        else
+        {
+            if (this.getMonth()==2)
+                da=28;
+            else if (this.getMonth()==4||this.getMonth()==6||this.getMonth()==9||this.getMonth()==11) {
+                da=30;
+            }
+            else da=31;
+        }
+        if (da<dd)
+            return true;
+        else return false;
+    }
+    public String showDate()//以“year-month-day”格式返回日期值
+    {
+        return this.year+"-"+this.month+"-"+this.day;
+    }
+
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        int year = 0;
+        int month = 0;
+        int day = 0;
+
+        int choice = input.nextInt();
+
+        if (choice == 1) { // test getNextNDays method
+            int m = 0;
+            year = Integer.parseInt(input.next());
+            month = Integer.parseInt(input.next());
+            day = Integer.parseInt(input.next());
+
+            DateUtil date = new DateUtil(year, month, day);
+
+            if (!date.checkInputValidity()) {
+                System.out.println("Wrong Format");
+                System.exit(0);
+            }
+
+            m = input.nextInt();
+
+            if (m < 0) {
+                System.out.println("Wrong Format");
+                System.exit(0);
+            }
+
+            System.out.print(date.getYear() + "-" + date.getMonth() + "-" + date.getDay() + " next " + m + " days is:");
+            System.out.println(date.getNextNDays(m).showDate());
+        } 
+        else if (choice == 2) { // test getPreviousNDays method
+            int n;
+            year = Integer.parseInt(input.next());
+            month = Integer.parseInt(input.next());
+            day = Integer.parseInt(input.next());
+
+            DateUtil date = new DateUtil(year, month, day);
+
+            if (!date.checkInputValidity()) {
+                System.out.println("Wrong Format");
+                System.exit(0);
+            }
+
+            n = input.nextInt();
+
+            if (n < 0) {
+                System.out.println("Wrong Format");
+                System.exit(0);
+            }
+
+            System.out.print(
+                    date.getYear() + "-" + date.getMonth() + "-" + date.getDay() + " previous " + n + " days is:");
+            System.out.println(date.getPreviousNDays(n).showDate());
+        } 
+        else if (choice == 3) {    //test getDaysofDates method
+            year = Integer.parseInt(input.next());
+            month = Integer.parseInt(input.next());
+            day = Integer.parseInt(input.next());
+
+            int anotherYear = Integer.parseInt(input.next());
+            int anotherMonth = Integer.parseInt(input.next());
+            int anotherDay = Integer.parseInt(input.next());
+
+            DateUtil fromDate = new DateUtil(year, month, day);
+            DateUtil toDate = new DateUtil(anotherYear, anotherMonth, anotherDay);
+
+            if (fromDate.checkInputValidity() && toDate.checkInputValidity()) {
+                System.out.println("The days between " + fromDate.showDate() +
+                        " and " + toDate.showDate() + " are:"
+                        + fromDate.getDaysofDates(toDate));
+            } 
+            else {
+                System.out.println("Wrong Format");
+                System.exit(0);
+            }
+        }
+        else{
+            System.out.print("Wrong Format");
+            System.exit(0);
+        }
+    }
+}
