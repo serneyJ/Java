@@ -1,0 +1,147 @@
+import java.util.Scanner;
+import java.util.*;
+import java.util.Arrays;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        int n= sc.nextInt();
+        Teacher []teachers=new Teacher[n];
+        TeacherManagement teacherManagement=new TeacherManagement(n);
+        for (int i=0;i<n;i++)
+        {
+            int no=sc.nextInt();
+            String name=sc.next();
+            int age=sc.nextInt();
+            String sem= sc.next();
+            teachers[i] =new Teacher(no,name,age,sem);
+            teacherManagement.add(teachers[i]);
+        }
+        Arrays.sort(teachers);
+        String name=sc.next();
+        int age= sc.nextInt();
+        for (int i=0;i<n;i++)
+        {
+            System.out.println(teachers[i]);
+        }
+        teacherManagement.search(name);
+        teacherManagement.search(age);
+    }
+}
+class TeacherManagement {
+    private int n=0;
+    private int i=0;
+    private Teacher[] teachers;
+    TeacherManagement(){}
+    TeacherManagement(int t)
+    {
+        n=t;
+        teachers=new Teacher[n];
+    }
+    public int getN()
+    {
+        return n;
+    }
+    public void add(Teacher t)
+    {
+        teachers[i]=t;
+        i++;
+    }
+    public void search(String nam)
+    {
+        int flag=0;
+        System.out.println("search by name:");
+        for (int j=0;j<i;j++)
+        {
+            if (teachers[j].getName().equals(nam))
+            {
+                System.out.println(teachers[j]);
+                flag++;
+            }
+        }
+        if (flag==0)
+            System.out.println("no such teacher");
+    }
+    public void search(int ag)
+    {
+        int flag=0;
+        System.out.println("search by age:");
+        for (int j=0;j<i;j++)
+        {
+            if (teachers[j].getAge()==ag)
+            {
+                flag++;
+                System.out.println(teachers[j]);
+            }
+        }
+        if (flag==0)
+            System.out.println("no such teacher");
+    }
+}
+class Teacher implements Comparable<Teacher>{
+    private int no;
+    private String name;
+    private int age;
+    private String seminary;
+
+    public Teacher(int nom,String Stname, int ag,String se) {
+        no=nom;
+        name = Stname;
+        age = ag;
+        seminary=se;
+    }
+    public int compareTo(Teacher t){
+        if(this.no == t.no)
+            return 1;
+        else if(this.no>t.no)
+            return 0;
+        else
+            return -1;
+    }
+
+
+   public Teacher() {}
+
+    public int getNo()
+    {
+        return no;
+    }
+    public String getName()
+    {
+        return name;
+    }
+
+    public String getSeminary()
+    {
+        return seminary;
+    }
+    public int getAge()
+    {
+        return age;
+    }
+    public void setNo(int n)
+    {
+        no=n;
+    }
+    public void setName(String na)
+    {
+        name=na;
+    }
+    public void setSeminary(String a)
+    {
+        seminary=a;
+    }
+    public void setAge(int ag)
+    {
+        age=ag;
+    }
+    public boolean equals(Teacher t)
+    {
+        if (this.no==t.no)
+            return true;
+        return false;
+    }
+    public String toString()
+    {
+        return "no: "+no+", name: "+name+", age: "+age+ ", seminary: "+seminary;
+    }
+}
