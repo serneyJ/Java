@@ -1,0 +1,230 @@
+import java.util.Scanner;
+import java.util.*;
+import java.util.List;
+import java.text.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String choice;
+        String name;
+        int age;
+        boolean gender;
+        String stuNo;
+        String clazz;
+        double salary;
+        String companyName;
+        List<Person> personList = new ArrayList<Person>();
+        List<Student> stuList = new ArrayList<Student>();
+        List<Employee> empList = new ArrayList<Employee>();
+        while (sc.hasNextLine()) {
+            choice = sc.next();
+            if (choice.equals("s")) {
+                name = sc.next();
+                age = sc.nextInt();
+                gender = Boolean.parseBoolean(sc.next());
+                stuNo = sc.next();
+                clazz = sc.next();
+                Student Stu = new Student(choice,name, age, gender, stuNo, clazz);
+                personList.add(Stu);
+//                                System.out.println(Stu.toString());
+
+            } else if (choice.equals("e")) {
+                name = sc.next();
+                age = Integer.parseInt(sc.next());
+                gender = Boolean.parseBoolean(sc.next());
+                salary = sc.nextDouble();
+                //salary= Double.parseDouble(sc.next());
+                companyName = sc.next();
+                Company company = new Company(companyName);
+                Employee Emp = new Employee(choice,name, age, gender, salary, company);
+//                System.out.println(Emp.toString());
+                personList.add(Emp);
+            } else {
+                break;
+            }
+        }
+            personList.sort(Comparator.comparing(Person::getName).thenComparingInt(Person::getAge));
+            for (Person person : personList) {
+                if (person.getStr().compareTo("s") == 0) {
+                    System.out.println( person.toString());
+                    int flag = 0;
+                    for (Student student : stuList) {
+                        if (student.equals(person)) {
+                            flag = 1;
+                            break;
+                        }
+                    }
+                        if (flag == 0) {
+                            stuList.add((Student) person);
+                        }
+                } else {
+                    System.out.println( person.toString());
+                    int flag = 0;
+                    for (Employee employee : empList) {
+                        if (employee.equals(person)) {
+                            flag = 1;
+                            break;
+                        }
+                    }
+                        if (flag == 0) {
+                            empList.add((Employee) person);}
+                    }
+            }
+                String ne = sc.next();
+                if (ne.compareTo("exit") == 0 || ne.compareTo("return") == 0) {
+                    return;
+                }
+                System.out.println("stuList");
+                for (Student student : stuList) {
+                    System.out.println(student.toString());
+                }
+                System.out.println("empList");
+                for (Employee employee : empList) {
+                    System.out.println(employee.toString());
+                }
+        }
+    }
+
+abstract class Person
+{
+    private String name;
+    private int age;
+    private String c;
+    private boolean gender;
+    public Person(){}
+    public Person(String ch,String nam, int ag, boolean gen)
+    {
+        c=ch;
+        name=nam;
+        age=ag;
+        gender=gen;
+    }
+    public String getStr()
+    {
+        return c;
+    }
+    public String getName()
+    {
+        return name;
+    }
+    public int getAge()
+    {
+        return age;
+    }
+    public String toString()
+    {//返回"name-age-gender"格式的字符串
+        return name+"-"+age+"-"+gender;
+    }
+//    public boolean equals(Person p)
+//    {//比较name、age、gender,都相同返回true,否则返回false
+//        if (this.gender==p.gender&&this.age==p.age&&this.name.equals(p.name))
+//            return true;
+//        else return false;
+//    }
+public boolean equals(Object obj) {
+    Person per = (Person) obj;
+    //对于String类型，如果为null则不创建对象，而赋值为null。比较name之前应先判断其是否为空。
+    if(per.name == null || this.name == null)
+        return false;
+    return (per.name.compareTo(this.name) == 0 && per.age == this.age && per.gender == this.gender );
+    //比较name、age、gender,都相同返回true,否则返回false
+}
+}
+class Student extends Person{
+    private String stuNo;
+    private String clazz;
+    //建议使用super复用Person类的相关有参构造函数
+    Student(String ch,String name, int age, boolean gender, String stuno, String cl)
+    {
+        super(ch,name,age,gender);
+        this.stuNo=stuno;
+        this.clazz=cl;
+    }
+    public String toString()
+    {//返回 “Student:person的toString-stuNo-clazz”格式的字符串
+        return "Student:"+super.toString()+"-"+stuNo+"-"+clazz;
+    }
+//    public boolean equals(Student stu)
+//    {//首先调用父类的equals方法,如果返回true，则继续比较stuNo与clazz。
+//        if (super.equals(stu))
+//        {
+//            if (this.stuNo==stu.stuNo&&this.clazz==stu.clazz)
+//                return true;
+//            else return false;
+//        }
+//        return false;
+//    }
+public boolean equals(Object obj) {
+    Student a = (Student) obj;
+    if (super.equals(obj)) {
+        if (this.stuNo == null | this.clazz == null || a.clazz == null || a.stuNo == null) {
+            return false;
+        }
+        return this.clazz.compareTo(a.clazz) == 0 && this.stuNo.compareTo(a.stuNo) == 0;
+    }
+    return false;
+}
+}
+class Company{
+    private String name;
+    public Company(String nam)
+    {
+        name=nam;
+    }
+    public String toString()
+    {//直接返回name
+        return this.name;
+    }
+    public boolean equals(Company c)
+    {//name相同返回true
+        if (this.name.equals(c.name))
+            return true;
+        return false;
+    }
+}
+class Employee extends Person{
+    private Company company;
+    private double salary;
+    public Employee(String ch,String nam, int ag, boolean gen, double salar, Company com)
+    {
+        super(ch,nam,ag,gen);
+        this.company=com;
+        this.salary=salar;
+    }
+    public String getStr()
+    {
+        return "e";
+    }
+    public String toString()
+    {//返回"Employee:person的toString-company-salary"格式的字符串
+        return "Employee:"+super.toString()+"-"+company.toString()+"-"+salary;
+    }
+//    public boolean equals(Employee e)
+//    {//首先调用父类的equals方法,如果返回true。再比较company与salary。
+//        if (e.company!=null&&this.company!=null)
+//        {
+//            if (super.equals(e))
+//            {
+//                if (this.company.equals(e.company)&&this.salary==e.salary)
+//                    return true;
+//            }
+//        }
+//        else if (this.company==null&&e.company==null)
+//            return true;
+//        return false;
+//    }
+//比较salary属性时，使用DecimalFormat df = new DecimalFormat("#.#");保留1位小数
+public boolean equals(Object obj) {
+    if (super.equals(obj)) {
+        Employee other = (Employee) obj;
+        if (this.company.toString() == null || other.company.toString() == null) {
+            return false;
+        }
+        String df1 = new DecimalFormat("#.#").format(this.salary);
+        String df2 = new DecimalFormat("#.#").format(other.salary);
+        return this.company.toString().compareTo(other.company.toString()) == 0 && df1.compareTo(df2) == 0;
+    }
+    return false;
+}
+}
